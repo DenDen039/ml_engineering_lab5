@@ -3,6 +3,9 @@
 .dvcignore
 !.dvc
 
+# wandb
+wandb
+
 # MLflow artifacts & DB
 mlruns/
 mlartifacts/

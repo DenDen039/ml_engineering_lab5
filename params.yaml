@@ -23,3 +23,6 @@ test:
 mlflow:
   tracking_uri: "http://localhost:5000"
   experiment_name: "CIFAR10_ResNet"
+
+wandb:
+  project: "MLFlow"

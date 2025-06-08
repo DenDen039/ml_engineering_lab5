@@ -46,7 +46,7 @@ stages:
           test_split_path: data/processed/test.pkl
           n_batches: 5
           val_size: 0.2
-          random_state: 40
+          random_state: 42
     outs:
     - path: data/processed/test.pkl
       hash: md5
@@ -54,27 +54,27 @@ stages:
       size: 123265823
     - path: data/processed/train.pkl
       hash: md5
-      md5: c3bfb2cd01b0a605403ff577ee398ba6
+      md5: 3eeb6748e259637d4b1cfb9adc8c65bd
       size: 493380859
     - path: data/processed/val.pkl
       hash: md5
-      md5: 77aa29bba2b55b6407d575da92d4cb25
+      md5: 45ba5f307deb2805a0433319072c7d95
       size: 123345799
   train:
     cmd: poetry run python -m scripts.train_model
     deps:
     - path: data/processed/train.pkl
       hash: md5
-      md5: c3bfb2cd01b0a605403ff577ee398ba6
+      md5: 3eeb6748e259637d4b1cfb9adc8c65bd
       size: 493380859
     - path: data/processed/val.pkl
       hash: md5
-      md5: 77aa29bba2b55b6407d575da92d4cb25
+      md5: 45ba5f307deb2805a0433319072c7d95
       size: 123345799
     - path: params.yaml
       hash: md5
-      md5: 282d5b0f82818cbd4b59fa5a159192df
-      size: 516
+      md5: b0d8649ec0bed726b160b3c40e70bcd5
+      size: 545
     - path: pipeline/loader.py
       hash: md5
       md5: aad6e4480e274440972024957b8227d0
@@ -85,27 +85,27 @@ stages:
       size: 604
     - path: pipeline/training.py
       hash: md5
-      md5: 932102f2b9bb82883a414c43f2a3d4cc
-      size: 2649
+      md5: 0eb96482b90e22ecfd5be4fa62524f7f
+      size: 2570
     - path: scripts/train_model.py
       hash: md5
-      md5: f52c65d21611338fe3c535e6a5a92905
-      size: 2712
+      md5: 90e6cf8498286d16cfc0e6a5f1049fb3
+      size: 3167
     params:
       params.yaml:
         prepare.train_split_path: data/processed/train.pkl
         prepare.val_split_path: data/processed/val.pkl
         train:
           model_save_path: models/resnet_cifar10.pth
-          lr: 0.01
-          num_epochs: 4
-          batch_size: 32
+          lr: 0.001
+          num_epochs: 5
+          batch_size: 64
           num_workers: 2
           device: cuda
     outs:
     - path: models/resnet_cifar10.pth
       hash: md5
-      md5: 8274290bc2f88e1f4b6bd55543e9db1b
+      md5: dbf08d7395e488df30b63ef362007e84
       size: 44777648
   test:
     cmd: poetry run python -m scripts.test_model
@@ -116,12 +116,12 @@ stages:
       size: 123265823
     - path: models/resnet_cifar10.pth
       hash: md5
-      md5: 8274290bc2f88e1f4b6bd55543e9db1b
+      md5: dbf08d7395e488df30b63ef362007e84
       size: 44777648
     - path: params.yaml
       hash: md5
-      md5: 282d5b0f82818cbd4b59fa5a159192df
-      size: 516
+      md5: b0d8649ec0bed726b160b3c40e70bcd5
+      size: 545
     - path: pipeline/loader.py
       hash: md5
       md5: aad6e4480e274440972024957b8227d0
@@ -136,13 +136,13 @@ stages:
       size: 1070
     - path: scripts/test_model.py
       hash: md5
-      md5: 8f46b6f430fdd36bf55a92220769db95
-      size: 2694
+      md5: fa674f359cec4d2d40765f286c951e47
+      size: 1893
     params:
       params.yaml:
         train.model_save_path: models/resnet_cifar10.pth
     outs:
     - path: metrics/test_metrics.json
       hash: md5
-      md5: d83fb92aa4bad46dee92379faa4e05e5
-      size: 174
+      md5: b5b96bb6e903b3efac6740f43659baa8
+      size: 163
