@@ -1,0 +1,60 @@
+stages:
+  download:
+    desc: Download and extract CIFAR-10 raw data
+    cmd: poetry run python -m scripts.download_data
+    deps:
+      - scripts/download_data.py
+      - pipeline/download.py
+    params:
+      - download
+    outs:
+      - "${download.cifar_dir}"
+
+  prepare:
+    desc: Process raw data into train/val/test sets
+    cmd: poetry run python -m scripts.preprocces_data
+    deps:
+      - scripts/preprocces_data.py
+      - pipeline/ingestion.py
+      - "${download.cifar_dir}"
+    params:
+      - download.cifar_dir
+      - prepare
+    outs:
+      - "${prepare.train_split_path}"
+      - "${prepare.val_split_path}"
+      - "${prepare.test_split_path}"
+
+  train:
+    desc: Train the model
+    cmd: poetry run python -m scripts.train_model
+    deps:
+      - scripts/train_model.py
+      - pipeline/models.py
+      - pipeline/loader.py
+      - pipeline/training.py
+      - "${prepare.train_split_path}"
+      - "${prepare.val_split_path}"
+      - params.yaml
+    params:
+      - prepare.train_split_path
+      - prepare.val_split_path
+      - train
+    outs:
+      - "${train.model_save_path}"
+
+  test:
+    desc: Test the model
+    cmd: poetry run python -m scripts.test_model
+    deps:
+      - scripts/test_model.py
+      - pipeline/models.py
+      - pipeline/loader.py
+      - pipeline/testing.py
+      - "${prepare.test_split_path}"
+      - "${train.model_save_path}"
+      - params.yaml
+    params:
+      - train.model_save_path
+    outs:
+      - "${test.metrics_out}"

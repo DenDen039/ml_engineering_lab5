@@ -1,0 +1,148 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: poetry run python -m scripts.download_data
+    deps:
+    - path: pipeline/download.py
+      hash: md5
+      md5: 319f37edcffd9f49e6aab0d633380416
+      size: 2756
+    - path: scripts/download_data.py
+      hash: md5
+      md5: 7c32d4a4136d2a9443251258433e5677
+      size: 895
+    params:
+      params.yaml:
+        download:
+          cifar_dir: data/cifar-10-batches-py
+    outs:
+    - path: data/cifar-10-batches-py
+      hash: md5
+      md5: 2c2c368a819f1df18fd0afa1c052c6c4.dir
+      size: 186214114
+      nfiles: 8
+  prepare:
+    cmd: poetry run python -m scripts.preprocces_data
+    deps:
+    - path: data/cifar-10-batches-py
+      hash: md5
+      md5: 2c2c368a819f1df18fd0afa1c052c6c4.dir
+      size: 186214114
+      nfiles: 8
+    - path: pipeline/ingestion.py
+      hash: md5
+      md5: 98b653fbf5b3b17ea48ff5dbc3ce94d4
+      size: 3462
+    - path: scripts/preprocces_data.py
+      hash: md5
+      md5: 70d6f1f73ee197c00c483795fb69ce07
+      size: 1469
+    params:
+      params.yaml:
+        download.cifar_dir: data/cifar-10-batches-py
+        prepare:
+          train_split_path: data/processed/train.pkl
+          val_split_path: data/processed/val.pkl
+          test_split_path: data/processed/test.pkl
+          n_batches: 5
+          val_size: 0.2
+          random_state: 40
+    outs:
+    - path: data/processed/test.pkl
+      hash: md5
+      md5: 7f53709046b789cace2afb2090b47776
+      size: 123265823
+    - path: data/processed/train.pkl
+      hash: md5
+      md5: c3bfb2cd01b0a605403ff577ee398ba6
+      size: 493380859
+    - path: data/processed/val.pkl
+      hash: md5
+      md5: 77aa29bba2b55b6407d575da92d4cb25
+      size: 123345799
+  train:
+    cmd: poetry run python -m scripts.train_model
+    deps:
+    - path: data/processed/train.pkl
+      hash: md5
+      md5: c3bfb2cd01b0a605403ff577ee398ba6
+      size: 493380859
+    - path: data/processed/val.pkl
+      hash: md5
+      md5: 77aa29bba2b55b6407d575da92d4cb25
+      size: 123345799
+    - path: params.yaml
+      hash: md5
+      md5: 282d5b0f82818cbd4b59fa5a159192df
+      size: 516
+    - path: pipeline/loader.py
+      hash: md5
+      md5: aad6e4480e274440972024957b8227d0
+      size: 1767
+    - path: pipeline/models.py
+      hash: md5
+      md5: 4c78ca7f6b9f5497a3d5b5f69d6aa1af
+      size: 604
+    - path: pipeline/training.py
+      hash: md5
+      md5: 932102f2b9bb82883a414c43f2a3d4cc
+      size: 2649
+    - path: scripts/train_model.py
+      hash: md5
+      md5: f52c65d21611338fe3c535e6a5a92905
+      size: 2712
+    params:
+      params.yaml:
+        prepare.train_split_path: data/processed/train.pkl
+        prepare.val_split_path: data/processed/val.pkl
+        train:
+          model_save_path: models/resnet_cifar10.pth
+          lr: 0.01
+          num_epochs: 4
+          batch_size: 32
+          num_workers: 2
+          device: cuda
+    outs:
+    - path: models/resnet_cifar10.pth
+      hash: md5
+      md5: 8274290bc2f88e1f4b6bd55543e9db1b
+      size: 44777648
+  test:
+    cmd: poetry run python -m scripts.test_model
+    deps:
+    - path: data/processed/test.pkl
+      hash: md5
+      md5: 7f53709046b789cace2afb2090b47776
+      size: 123265823
+    - path: models/resnet_cifar10.pth
+      hash: md5
+      md5: 8274290bc2f88e1f4b6bd55543e9db1b
+      size: 44777648
+    - path: params.yaml
+      hash: md5
+      md5: 282d5b0f82818cbd4b59fa5a159192df
+      size: 516
+    - path: pipeline/loader.py
+      hash: md5
+      md5: aad6e4480e274440972024957b8227d0
+      size: 1767
+    - path: pipeline/models.py
+      hash: md5
+      md5: 4c78ca7f6b9f5497a3d5b5f69d6aa1af
+      size: 604
+    - path: pipeline/testing.py
+      hash: md5
+      md5: 5417aa843ae1f53bda96ca162fa9b2b6
+      size: 1070
+    - path: scripts/test_model.py
+      hash: md5
+      md5: 8f46b6f430fdd36bf55a92220769db95
+      size: 2694
+    params:
+      params.yaml:
+        train.model_save_path: models/resnet_cifar10.pth
+    outs:
+    - path: metrics/test_metrics.json
+      hash: md5
+      md5: d83fb92aa4bad46dee92379faa4e05e5
+      size: 174

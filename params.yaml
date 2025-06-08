@@ -1,0 +1,25 @@
+download:
+  cifar_dir: "data/cifar-10-batches-py"
+
+prepare:
+  train_split_path: "data/processed/train.pkl"
+  val_split_path:   "data/processed/val.pkl"
+  test_split_path:  "data/processed/test.pkl"
+  n_batches: 5
+  val_size: 0.2
+  random_state: 42
+
+train:
+  model_save_path: "models/resnet_cifar10.pth"
+  lr: 0.001
+  num_epochs: 5
+  batch_size: 32
+  num_workers: 2
+  device: "cuda"
+
+test:
+  metrics_out: "metrics/test_metrics.json"
+
+mlflow:
+  tracking_uri: "http://localhost:5000"
+  experiment_name: "CIFAR10_ResNet"
